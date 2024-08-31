@@ -1,0 +1,92 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input CreateShopType {
+  shop_average_price: Float!
+  shop_description: String!
+  shop_name: String!
+  shop_turnover: Float!
+}
+
+input CreateUserDto {
+  email: String!
+  name: String!
+  password: String!
+}
+
+type GetProductsType {
+  currentPage: Int!
+  pageSize: Int!
+  products: [ProductDto!]!
+  totalPages: Int!
+}
+
+input LoginUserDto {
+  email: String!
+  password: String!
+}
+
+type Mutation {
+  createProducts(products: [ProductDtoCreate!]!): [ProductDto!]!
+  createShop(createShopObject: CreateShopType!): Shop!
+  deleteShop(shop_id: Float!): Shop!
+  login(createUserDto: LoginUserDto!): ReturnReg!
+  registration(createUserDto: CreateUserDto!): ReturnReg!
+}
+
+type Product {
+  product_description: String!
+  product_id: ID!
+  product_name: String!
+  product_price: Float!
+}
+
+type ProductDto {
+  product_id: ID!
+}
+
+input ProductDtoCreate {
+  product_description: String!
+  product_name: String!
+  product_price: Int!
+}
+
+type Query {
+  getAllUsers: [User!]!
+  getProducts(page: Int!, shopId: Int!): GetProductsType!
+  getShop(shop_id: Int!): Shop!
+  getUser(id: Float!): User!
+}
+
+type ReturnReg {
+  email: String!
+  id: Float!
+  name: String!
+  role: String!
+  token: String!
+}
+
+type Shop {
+  getProductsByShopId: [Product!]!
+  getUserByShopId: User!
+  products: [Product!]
+  shop_average_price: Float!
+  shop_description: String
+  shop_id: ID!
+  shop_name: String!
+  shop_turnover: Float!
+  userId: Float!
+}
+
+type User {
+  email: String!
+  getProductsByUser: [Product!]!
+  getShopById: Shop!
+  id: ID!
+  name: String!
+  password: String
+  role: String!
+  shopId: Float
+  shops: Shop!
+}
