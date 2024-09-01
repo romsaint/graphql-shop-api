@@ -8,6 +8,7 @@ import { RolesReflector } from 'src/auth/decorators/roleReflector.reflector';
 import { JwtAuthGuard } from 'src/auth/guards/jwtAuthGuard.guard';
 import { AuthProtectedGuard } from 'src/auth/guards/auth.guard';
 
+
 @RolesReflector(['ADMIN', 'MODERATOR'])
 @Resolver(of => User)
 export class UserResolver {

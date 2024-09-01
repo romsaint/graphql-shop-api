@@ -43,7 +43,10 @@ type Product {
 }
 
 type ProductDto {
+  product_description: String!
   product_id: ID!
+  product_name: String!
+  product_price: Int!
 }
 
 input ProductDtoCreate {

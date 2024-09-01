@@ -10,6 +10,8 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthResolver } from './auth/auth.resolver';
 import { ProductModule } from './product/product.module';
+import { CacheModule } from '@nestjs/cache-manager';
+import { HttpModule, HttpService } from '@nestjs/axios';
 
 
 
@@ -20,6 +22,7 @@ import { ProductModule } from './product/product.module';
       isGlobal: true,
       envFilePath: '../.env'
     }),
+    HttpModule,
     UserModule,
     ShopModule,
     AuthModule,

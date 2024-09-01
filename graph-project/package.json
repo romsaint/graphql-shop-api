@@ -22,6 +22,7 @@
   "dependencies": {
     "@apollo/server": "^4.11.0",
     "@nestjs/apollo": "^12.2.0",
+    "@nestjs/axios": "^3.0.3",
     "@nestjs/cache-manager": "^2.2.2",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.2.3",
@@ -33,6 +34,7 @@
     "@prisma/client": "^5.19.0",
     "@types/passport-local": "^1.0.38",
     "apollo-server": "^3.13.0",
+    "axios": "^1.7.6",
     "bcryptjs": "^2.4.3",
     "cache-manager": "^5.7.6",
     "class-transformer": "^0.5.1",

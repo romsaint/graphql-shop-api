@@ -39,7 +39,6 @@ model Shops {
   userId    Int   @unique
   owner  Users   @relation(fields: [userId], references: [id])
   products    ShopsProducts[]
-  @@index([shop_id])
 }
 model Products {
   product_id  Int  @id   @default(autoincrement())
@@ -47,6 +46,7 @@ model Products {
   product_description    String
   product_price   Int
   shops   ShopsProducts[]
+  @@index([product_id])
 }
 
 model ShopsProducts {

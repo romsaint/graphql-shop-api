@@ -1,18 +1,27 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ProductDto } from './entities/product.dto';
 import { PrismaService } from 'prisma/prisma.service';
 import { ProductDtoCreate } from './entities/productCreate.dto';
 import { ICustomRequest } from 'src/auth/types/other/customReq';
 import { ApolloError } from 'apollo-server';
 import { GetProductsType } from './entities/getProducts.dto';
+import { Cache } from 'cache-manager';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { HttpService } from '@nestjs/axios';
+import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+
 
 @Injectable()
 export class ProductService {
-    constructor(private readonly prismaClient: PrismaService) { }
+    constructor(
+        private readonly prismaClient: PrismaService,
+        @Inject(CACHE_MANAGER) private readonly cacheManager: Cache
+    ) { }
 
     async createProducts(products: ProductDtoCreate[], req: ICustomRequest): Promise<ProductDto[]> {
         try {
-            const user = await this.prismaClient.users.findFirst({ where: { id: req.user.id } })
+            const user = await this.prismaClient.users.findFirst({ where: { id: req?.user?.id } })
 
             if (!user) {
                 throw new UnauthorizedException()
@@ -30,27 +39,36 @@ export class ProductService {
                     await this.prismaClient.shopsProducts.createMany({ data: { productId: i, shopId: user.shopId } })
                 }
 
+                await this.invalidateProductCache(user.shopId)
+
                 return data
             }
         } catch (e) {
-            throw new ApolloError(e.message, e.extensions.code || 'SERVER_ERROR')
+            throw new ApolloError(e.message, e?.extensions?.code || 'SERVER_ERROR')
         }
     }
 
     async getProducts(shopId: number, page: number): Promise<GetProductsType> {
-        if (page < 0) {
+        const cacheKey = `products_${shopId}_${page}`;
+        const cachedData = await this.cacheManager.get<GetProductsType>(cacheKey);
+      
+        if (cachedData) {
+            return cachedData;
+        }
+
+        if (page < 1) {
             throw new ApolloError('Page number must be non-negative');
         }
 
         const pageSize = 5;
-        const skip = page * pageSize;
+        const skip = (page - 1) * pageSize;
 
         const [totalCount, products] = await Promise.all([
             this.prismaClient.products.count({
                 where: {
                     shops: {
                         some: {
-                            shopId
+                            shopId 
                         }
                     }
                 }
@@ -67,15 +85,28 @@ export class ProductService {
                 take: pageSize
             })
         ]);
-
+    
         const totalPages = Math.ceil(totalCount / pageSize);
 
-        return {
+        const result: GetProductsType = {
             products,
             totalPages,
             currentPage: page,
             pageSize
-        } as GetProductsType;
+        };
+
+        await this.cacheManager.set(cacheKey, result, 60); // Кешируем на 60 секунд
+
+        return result;
+    }
+
+    async invalidateProductCache(shopId: number) {
+        const keys = await this.cacheManager.store.keys();
+
+        keys.forEach(async key => {
+            if (key.startsWith(`products_${shopId}`)) {
+                await this.cacheManager.del(key);
+            }
+        });
     }
 }
-
