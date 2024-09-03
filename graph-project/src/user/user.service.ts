@@ -10,9 +10,9 @@ import { ApolloError } from 'apollo-server';
 export class UserService {
     constructor(private readonly prismaClient: PrismaService) { }
 
-    async getUser(id: number) {
+    async getUser(id: number): Promise<User> {
         try {
-            const user = await this.prismaClient.users.findFirst({ where: { id } });
+            const user: User = await this.prismaClient.users.findFirst({ where: { id } });
             if (!user) {
                 throw new ApolloError('User not found', 'NOT_FOUND')
             }
@@ -23,7 +23,7 @@ export class UserService {
         }
     }
 
-    async getAllUsers() {
+    async getAllUsers(): Promise<User[]> {
         return await this.prismaClient.users.findMany();
     }
 

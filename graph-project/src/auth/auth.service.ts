@@ -28,7 +28,7 @@ export class AuthService {
             const hashedPassword = await bcrypt.hash(createUserDto.password, 10)
             const { password, ...data } = createUserDto
     
-            const created = await this.prismaClient.users.create({ data: { ...data, password: hashedPassword, role: "USER" } })
+            const created = (await this.prismaClient.users.create({ data: { ...data, password: hashedPassword, role: "USER" } }))
             const jwtData = { ...data, id: created.id }
     
             const token = this.jwtService.sign(jwtData, { secret: this.config.get('ACCESS_TOKEN_SECRET') })
@@ -54,5 +54,11 @@ export class AuthService {
         const payload = { email: user.email, name: user.name, role: user.role, id: user.id };
 
         return { token: this.jwtService.sign(payload, { secret: this.config.get('ACCESS_TOKEN_SECRET') }), ...payload};
+    }
+
+    async validateGoogleUser(profile) {
+        const {} = profile
+        const user = {}
+        return user
     }
 }

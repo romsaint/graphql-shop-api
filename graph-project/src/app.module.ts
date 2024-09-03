@@ -12,6 +12,8 @@ import { AuthResolver } from './auth/auth.resolver';
 import { ProductModule } from './product/product.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { HttpModule, HttpService } from '@nestjs/axios';
+import { AuthService } from './auth/auth.service';
+import { RestAuthModule } from './rest-auth/rest-auth.module';
 
 
 
@@ -22,11 +24,15 @@ import { HttpModule, HttpService } from '@nestjs/axios';
       isGlobal: true,
       envFilePath: '../.env'
     }),
+    ConfigModule.forRoot({
+      isGlobal: true
+    }),
     HttpModule,
     UserModule,
     ShopModule,
     AuthModule,
-    ProductModule
+    ProductModule,
+    RestAuthModule
   ],
   providers: [PrismaService],
 })

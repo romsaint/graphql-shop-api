@@ -1,6 +1,7 @@
-import { Field, ID, ObjectType } from "@nestjs/graphql";
+import { Extensions, Field, ID, ObjectType } from "@nestjs/graphql";
 import { RolesVariable } from "../types/roles.type";
 import { Shop } from "../../shop/entities/shop.entity";
+import { Roles } from "@prisma/client";
 
 
 @ObjectType()
@@ -23,6 +24,7 @@ export class User {
     @Field(type => Shop)
     shops?: Shop
 
+    @Extensions({role: [Roles.ADMIN, Roles.MODERATOR]})
     @Field()
     email: string
 }
